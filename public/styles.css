@@ -1,0 +1,61 @@
+body{
+    margin: 15px;
+    background-color: #191414;
+    color: white;
+}
+
+button{
+    background-color: #1DB954;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;    
+}
+
+.login{
+    position: absolute;
+    right: 20px;
+    top:20px;
+}
+
+.middle_btn{
+    margin: auto;
+    width: 20%;
+    display: flex;
+    justify-content: center;
+}
+
+.middle{
+    margin: auto;
+    width:60%;
+    text-align: center;
+}
+
+.right{
+    float: right;
+    padding-top: 10px;
+}
+
+dialog{
+    background-color: rgb(215, 220, 214);
+    opacity: 80%;
+    margin-top: 100px;
+    border: none;
+    border-radius: 10px;
+}
+
+.hidden{
+    display: none;
+}
+
+table, th, td{
+    border: 1px solid white;
+    border-collapse: collapse;
+  }
+
+table{
+    width: 80%;
+    margin: auto;
+    table-layout: fixed;
+    text-align: center;
+}
+    

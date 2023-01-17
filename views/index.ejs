@@ -1,0 +1,115 @@
+<html>
+<head>
+    <title> Spotify Lite </title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:100"     rel="stylesheet">
+    <link href="/styles.css" rel="stylesheet">
+</head>
+<body>
+    <h1>Spotify Lite </h1><br>
+    <div class="login">
+        <button type="button" id="showLogin">Log In</button>
+        <button type="button" id="showSignup">Sign Up</button>
+    </div>
+    <div id="login_dialog" class="hidden">
+        <form class="login_form" id="login_form">
+            <legend>Login</legend>
+            <fieldset>
+            <label for="login_email">Email</label>
+            <input type="text" name="login_email" id="login_email">
+            <label for="login_pwd">Password</label>
+            <input type="text" name="login_pwd" id="login_pwd">
+            <button type="button" onclick="loginHandler()">Log In</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div id="signup_dialog" class="hidden">
+        <form class="signup_form" id="signup_form">
+            <legend>Sign Up</legend>
+            <fieldset>
+                <label for="signup_username">Username</label>
+                <input type="text" name="signup_username" id="signup_username">
+                <label for="signup_email">Email</label>
+                <input type="text" name="signup_email" id="signup_email">
+                <label for="signup_pwd">Password</label>
+                <input type="text" name="signup_pwd" id="signup_pwd">
+                <button type="button" onclick="signupHandler()">Sign Up</button>
+                </fieldset>
+        </form>
+    </div>
+
+    <div class="middle">
+        <p>Sign up or Log in to view your profile</p>
+    </div>
+
+    <div class="middle_btn">
+        <button type="button" onclick="showSongs()">Browse songs</button>
+    </div>
+</body>
+</html>
+
+<script>
+    const showLogin = document.getElementById('showLogin');
+    const loginDialog = document.getElementById('login_dialog');
+    showLogin.addEventListener('click', () => {
+        loginDialog.classList.remove("hidden");
+    });
+
+    const showSignup = document.getElementById('showSignup');
+    const signupDialog = document.getElementById('signup_dialog');
+    showSignup.addEventListener('click', () => {
+        signupDialog.classList.remove("hidden");
+    });
+
+    var showSongs = function(){
+        location.assign('http://localhost:3001/songs');     
+    }
+
+    var Login = function(){
+        var user = document.getElementById('username').value;
+        location.assign(`http://localhost:3001/${user}`)
+    }
+
+    var loginHandler = async function(){
+        var email = document.getElementById("login_email").value;
+        var password = document.getElementById("login_pwd").value;
+        const Login_Credentials = {
+            "email": email,
+            "password": password
+        };  
+        const res = await fetch(`http://localhost:3001/user/login`, {
+            method:"POST", headers: { 'Content-Type': 'application/json' }, 
+            body:JSON.stringify(Login_Credentials)
+        })
+        const data= await res.json(); 
+        console.log(data.user);  
+        if(data.success==true){
+            location.assign(`http://localhost:3001/profile/${data.user}`);
+        }
+        else{
+            alert("login failed, check your email/password")
+        }
+    }
+
+    var signupHandler = async function(){
+        var username = document.getElementById("signup_username").value;
+        var email = document.getElementById("signup_email").value;
+        var password = document.getElementById("signup_pwd").value;
+        const SignUp_Credentials = {
+            "username": username,
+            "email": email,
+            "password": password
+        };  
+        const res = await fetch(`http://localhost:3001/user/signup`, {
+            method:"POST", headers: { 'Content-Type': 'application/json' }, 
+            body:JSON.stringify(SignUp_Credentials)
+        })
+        const data= await res.json(); 
+        if(data.success==true){
+            alert("Sign up success!");
+        }
+        else{
+            alert(data.username+'\n'+data.email);
+        }      
+    }
+</script>

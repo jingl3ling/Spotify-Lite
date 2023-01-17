@@ -1,0 +1,154 @@
+<html>
+<head>
+    <title> Spotify Lite </title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:100"     rel="stylesheet">
+    <link href="/styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="login">    
+        <button type="button" id="editprofile">Edit Profile</button>
+        <button onclick="logOut()">Log Out</button>
+    </div>
+    <h1>Welcome, <%= user %></h1>
+    <form id="profile_dialog" class="hidden">
+        <legend>Edit profile</legend>
+        <fieldset>
+            <label>Username:</label>
+            <input type="text" name="username" id="username">
+            <label>Password:</label>
+            <input type="text" name="password" id="password">
+            <label>Email:</label>
+            <input type="text" name="email" id="email">     
+            <button type="button" onclick="editProfile()">Edit</button>        
+        </fieldset>
+    </form>
+
+    <button type="button" onclick="showLikedSongs()">Liked songs</button>
+    <% for( var i = 0; i < song.length; i++){ %>
+        <tr>
+          <td> <%= song[i] %> </td>
+        </tr>
+      <% } %>
+
+      <br>
+      <br>
+
+      <button type="button" onclick="showFollowng()">Followng</button>
+      <% for( var i = 0; i < following.length; i++){ %>
+          <tr>
+            <td> <%= following[i] %> </td>
+          </tr>
+        <% } %>
+
+    <h2>All songs</h2>
+    <% for( var i = 0; i < songs.length; i++){ %>
+        <ul>
+          <li> <a><%= songs[i] %></a><button class="like">Like</button></li>
+        </ul>
+      <% } %> 
+      
+
+    <h2>All artists</h2>
+    <% for( var i = 0; i < artists.length; i++){ %>
+        <ul>
+        <li> <a><%= artists[i] %></a><button class="follow">Follow</button></li>
+        </ul>
+    <% } %>  
+</body>
+</html>
+
+<script>
+    var user = "<%= user %>";
+
+    const editbtn = document.getElementById('editprofile');
+    const profileDialog = document.getElementById('profile_dialog');
+    editbtn.addEventListener('click', () => {
+        profileDialog.classList.remove("hidden");
+    });
+
+    var logOut = function(){
+        fetch(`http://localhost:3001/user/logout`, {method:"POST", headers: { 'Content-Type': 'application/json' }});
+        location.assign('http://localhost:3001');   
+    }
+
+    var showLikedSongs = function(){
+        fetch(`http://localhost:3001/profile/${user}/songs`, {method:"GET", headers: { 'Content-Type': 'application/json' }});
+        setTimeout(() => {
+            history.go(0);
+        }, "1000")  
+    }
+
+    var showFollowng = function(){
+        fetch(`http://localhost:3001/profile/${user}/artists`, {method:"GET", headers: { 'Content-Type': 'application/json' }});
+        setTimeout(() => {
+            history.go(0);
+        }, "1000")  
+    }
+
+    var editProfile = async function(){
+        var new_username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        var email = document.getElementById("email").value;
+        const User = {
+            "old_username": user,
+            "new_username": new_username,
+            "password": password,
+            "email": email
+        };        
+        const res = await fetch(`http://localhost:3001/profile/user/info`, {method:"PUT", headers: { 'Content-Type': 'application/json' }, body:JSON.stringify(User)})
+        const data= await res.json(); 
+        if(data.success==true){
+            alert("Profile updated successfully! Please re-login");
+            logOut();
+        }
+        else{
+            alert(data.username+'\n'+data.email);
+        }           
+    }
+
+    var like_btns = document.getElementsByClassName("like");
+    Array.from(like_btns).forEach(function(like_btn) {
+        like_btn.addEventListener('click',function(e){
+        var li = e.target.parentNode;
+        //console.log(tr.firstElementChild);
+        var song = li.firstElementChild.innerHTML;
+        console.log(song);
+        Like(song);
+        });
+    });
+
+    var Like = async function(song){
+        var songTitle = song.replaceAll(" ",'');
+        const url = user + '/songs/' + songTitle;
+
+        fetch(`http://localhost:3001/profile/${url}`, {method:"PUT", headers: { 'Content-Type': 'application/json' }})
+        // const data = await res.json();
+        // console.log(data);
+        alert("song liked");
+        //location.reload();
+    }
+
+    var follow_btns = document.getElementsByClassName("follow");
+    Array.from(follow_btns).forEach(function(follow_btn) {
+        follow_btn.addEventListener('click',function(e){
+        var li = e.target.parentNode;
+        //console.log(tr.firstElementChild);
+        var artist = li.firstElementChild.innerHTML;
+        console.log(artist);
+        Follow(artist);
+        // Delete(file.innerHTML,title.innerHTML);
+        });
+    });
+
+    var Follow = function(artist){
+        var artistName = artist.replaceAll(" ",'');
+        const url = user + '/artists/' + artistName;
+        console.log(url);
+
+        fetch(`http://localhost:3001/profile/${url}`, {method:"PUT", headers: { 'Content-Type': 'application/json' }})
+        //location.reload();
+        alert("artist followed");
+    }
+
+
+</script>

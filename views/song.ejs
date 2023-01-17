@@ -1,0 +1,88 @@
+<html>
+<head>
+    <title> Spotify Lite </title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:100"     rel="stylesheet">
+    <link href="/styles.css" rel="stylesheet">
+    <style>
+        .form-item{
+            width: 60%;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="BacktoHome()">Back to Home</button>
+    <h2>Songs</h2>
+    <form>
+        <legend>Search song</legend>
+        <fieldset>
+            <label for="language">Language:</label>
+            <select name="language" id="language">
+                <option name="all" value="all"> Select</option>
+                <option name="english" value="english"> English</option>
+                <option name="chinese" value="chinese"> Chinese</option>
+            </select>
+            <input type="text" id="search" placeholder="Search by title/artist/genre" class="form-item"> 
+            <button type="button" id="search_btn">Search</button>         
+        </fieldset>
+    </form>
+
+    <p>Search Result</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Artists</th>
+                <th>Languages</th>
+                <th>Genre</th>
+                <th>Likes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for( var i = 0; i < songs.length; i++){ %>
+                <tr>
+                  <td> <%= songs[i].title %> </td>
+                  <td> <%= artists[i] %> </td>
+                  <td> <%= songs[i].languages %> </td>      
+                  <td> <%= songs[i].genre %> </td>   
+                  <td> <%= (songs[i].likedBy).length %> </td>     
+                </tr>
+              <% } %>
+        </tbody>
+    </table>
+</body>
+</html>
+
+<script>
+    var language = document.getElementById('language');
+    language.addEventListener('change', function(){
+        let lang = language.value;
+        console.log('language='+lang);
+        var url = `http://localhost:3001/songs?language=${lang}`;
+        fetch(url, {method:"GET", headers: { 'Content-Type': 'application/json' }});
+        setTimeout(() => {
+            history.go(0);
+        }, "1500")  
+    })
+
+    var BacktoHome = function(){
+        location.assign('http://localhost:3001');   
+    }
+    // var Search = function(){
+    //     var search = document.getElementById("search").value;
+    //     fetch(`http://localhost:3001/songs/${search}`, {method:"GET", headers: { 'Content-Type': 'application/json' }});        
+    //     setTimeout(() => {
+    //         history.go(0);
+    //     }, "500")  
+    //     //location.reload();
+    // }
+
+    var Search_btn = document.getElementById("search_btn");
+    Search_btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        var search = document.getElementById("search").value;
+        fetch(`http://localhost:3001/songs/${search}`, {method:"GET", headers: { 'Content-Type': 'application/json' }});        
+        setTimeout(() => {
+            history.go(0);
+        }, "500")  
+    })
+</script>
